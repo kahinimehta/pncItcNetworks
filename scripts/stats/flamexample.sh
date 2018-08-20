@@ -1,0 +1,2 @@
+
+flameo --copefile=/data/jux/BBL/projects/pncItcNetworks/subjectData/n269/n269_pearson/logk/cluster_correct_v001_c05/easythresh/ROI2map/ROI1map_z.nii.gz --mask=/data/joy/BBL/studies/pnc/template/priors/prior_mask.nii.gz  --dm=/data/jux/BBL/projects/pncItcNetworks/scripts/design.mat --tc=/data/jux/BBL/projects/pncItcNetworks/scripts/design.con --cs=/data/jux/BBL/projects/pncItcNetworks/scripts/group.grp --runmode=flame12
