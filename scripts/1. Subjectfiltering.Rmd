@@ -1,0 +1,49 @@
+---
+title: "subject filtering"
+author: Azeez Adebimpe 
+output: html_notebook
+---
+
+This sample was selected from [ Marieta work with NMF application on  T1w images ](https://github.com/PennBBL/pehlivanovaPncItcScripts). A total *452 subjects* were used for her final analysis. Those subjects were screen furteher fore resting state analysis,
+
+1. Merge the Resting state QA with Marieta subjects to select subjects with both T1w and resting state data 
+
+```{r}
+restdatapnc=read.csv('~/Box/projects/ITC/demographics/n2416_RestQAData_20170714.csv') # pnc QA
+nmel=read.csv('~/Box/projects/ITC/demographics/n452_pnc_itc_whole_sample_20160825.csv') # Marieta subbjecct 
+pncitc=merge(nmel,restdatapnc,by=c('bblid','scanid')) # select ids for  
+```
+
+
+
+2. select covariates (logk,age,sex,race, motion etc ) and subjects that pass resting-state QA (motion and voxelwise)
+```{r}
+pncit1 <- data.frame(
+  pncitc$bblid,
+  pncitc$scanid,pncitc$logk,pncitc$ageAtScan,pncitc$logAlpha,pncitc$sex,pncitc$race,pncitc$race2,pncitc$restExclude,pncitc$restExcludeVoxelwise,
+  pncitc$restNoDataExclude,pncitc$relMeanRMSmotion,pncitc$restNSpikesMotion,pncitc$restNSpikesMotionExclude,pncitc$restRelMeanRMSMotionExclude
+)
+
+colnames(pncit1)=c('bblid',
+                   'scanid','logk','ageAtScan','logAlpha','sex','race','race2','restExclude','restExcludeVoxelwise',
+                   'restNoDataExclude','relMeanRMSmotion','restNSpikesMotion','restNSpikesMotionExclude','restRelMeanRMSMotionExclude')
+
+pncit1=pncit1[which(pncit1$restExcludeVoxelwise==0),]
+pncit1=pncit1[which(pncit1$restRelMeanRMSMotionExclude==0),]
+pncit1=pncit1[-which(is.na(pncit1$relMeanRMSmotion)),]
+```
+
+
+3. 308 subjects were good but one subject (bblid 96832) has 96 timepoints instead of 120
+
+```{r}
+pncit1=pncit1[-which(pncit1$bblid==96832),]
+ids=data.frame(pncit1$bblid,pncit1$scanid) # get bblid and scanid for futher analyis 
+write.csv(ids,'~/Box/projects/ITC/newscript/n307_blbid_scanid.csv',row.names = FALSE,quote = FALSE)
+pncit1$age=pncit1$ageAtScan/12
+write.csv(pncit1,'~/Box/projects/ITC/newscript/n307_demographics.csv',row.names = FALSE,quote = FALSE)
+
+```
+
+
+
