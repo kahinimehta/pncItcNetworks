@@ -1,0 +1,7 @@
+.DS_Store
+notebook/seed-basedcorrelation.ipynb
+output/mask2.nii.gz
+output/mask1/ 
+output/mask2/
+output/seedcorrmaps/
+subjectData/PNC_transforms

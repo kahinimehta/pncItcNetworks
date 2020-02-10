@@ -1,0 +1,37 @@
+
+
+
+# this  script computes FDR  correction for flameo output
+setwd('/cbica/projects/GURLAB/projects/pncitc/output/seedcorrmaps/')
+.libPaths("/gpfs/fs001/cbica/home/adebimpa/R/x86_64-conda_cos6-linux-gnu-library/3.6")
+rm(list = ls())
+library(RNifti)
+# for mask1 or seed1
+for (i in 1:5 ){  
+    mask=readNifti('mask1/logk/mask.nii.gz')
+    z1=readNifti(paste0('mask1/logk/zstat',i,'.nii.gz'))
+    Z=z1[mask==1]
+    p <- 2*pnorm((-abs(Z)))
+    p1=p.adjust(p, method = 'fdr')
+    zvals = qnorm(1 - (p1/2)) 
+    zvals[zvals==Inf]=10
+    Z[Z>0]=1; Z[Z<0]=-1
+    zm=mask
+    zm[mask==1]=zvals*Z
+    writeNifti(zm,paste0('mask1/logk/zfdr',i,'.nii.gz'),template = mask)
+}
+
+# for mask2 or seed2
+for (i in 1:5 ){  
+    mask=readNifti('mask2/logk/mask.nii.gz')
+    z1=readNifti(paste0('mask2/logk/zstat',i,'.nii.gz'))
+    Z=z1[mask==1]
+    p <- 2*pnorm((-abs(Z)))
+    p1=p.adjust(p, method = 'fdr')
+    zvals = qnorm(1 - (p1/2)) 
+    zvals[zvals==Inf]=10
+    Z[Z>0]=1; Z[Z<0]=-1
+    zm=mask
+    zm[mask==1]=zvals*Z
+    writeNifti(zm,paste0('mask2/logk/zfdr',i,'.nii.gz'),template = mask)
+}
