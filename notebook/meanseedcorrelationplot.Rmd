@@ -1,0 +1,103 @@
+---
+title: "vizformeanseedbasedcorrelation"
+author: "zizu+other"
+date: "2/9/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+### load required packages and csv files 
+
+```{r  echo=FALSE }
+library(dplyr); library(psych); library(mgcv)
+library(ggplot2); library(visreg); library(sjPlot)
+library(parallel);library(RLRsim); library(gamm4)
+library(effects); library(lm.beta); require(gridExtra)
+require(grid);library(gridBase);library(ggthemes)
+library(MASS);library(ppcor)
+setwd("/Users/adebimpe/Box/projects/ITC2/")
+model=read.csv('demographics/n307_demographics.csv')
+meancorr=read.csv('subjectData/n307_meanseedcorr.csv')
+datacorr=merge(model,meancorr,by=c('bblid','scanid'))
+b=quantile(datacorr$logk)
+datacorr$logkQ=NA
+datacorr$logkQ[datacorr$logk<=b[2]]=0 # lower 25% quantile 
+datacorr$logkQ[datacorr$logk>=b[4]]=1 # upper 25% quantile
+```
+
+### TPJ seed-based correlation  positive z-value 
+```{r}
+postpjmask=lm(tpj_posmask~age+sex+relMeanRMSmotion+logk,data=datacorr)
+summary(postpjmask)
+lm.beta(postpjmask)
+imageplot<-visreg(postpjmask, "logk", 
+                  main="TPJ seed-based correlation: postive zstats", xlab="logk", 
+                  ylab="correlatrion",line=list(col="blue",lwd=4),overlay=TRUE)
+
+postpjmask=lm(tpj_posmask~age+sex+relMeanRMSmotion+logk+logkQ,data=datacorr)
+summary(postpjmask)
+lm.beta(postpjmask)
+imageplot<-visreg(postpjmask, "age", by='logkQ',
+                  main="TPJ seed-based correlation: postive zstats", xlab="age", 
+                  ylab="correlatrion",line=list(col="blue",lwd=4),overlay=TRUE)
+
+```
+### TPJ seed-based correlation  negative  z-value 
+```{r}
+negtpjmask=lm(tpj_negmask~age+sex+relMeanRMSmotion+logk,data=datacorr)
+summary(negtpjmask)
+lm.beta(negtpjmask)
+imageplot<-visreg(negtpjmask, "logk", 
+                  main="TPJ seed-based correlation: negative zstats", xlab="logk", 
+                  ylab="correlatrion",line=list(col="blue",lwd=4),overlay=TRUE)
+
+negtpjmask=lm(tpj_negmask~age+sex+relMeanRMSmotion+logk+logkQ,data=datacorr)
+summary(negtpjmask)
+lm.beta(negtpjmask)
+imageplot<-visreg(negtpjmask, "age", by='logkQ',
+                  main="TPJ seed-based correlation: negtaive zstats", xlab="age", 
+                  ylab="correlatrion",line=list(col="blue",lwd=4),overlay=TRUE)
+
+```
+### FRO seed-based correlation  positive z-value 
+```{r}
+posfromask=lm(fro_posmask~age+sex+relMeanRMSmotion+logk,data=datacorr)
+summary(posfromask)
+lm.beta(posfromask)
+imageplot<-visreg(posfromask, "logk", 
+                  main="FRONTAL seed-based correlation: postive zstats", xlab="logk", 
+                  ylab="correlatrion",line=list(col="blue",lwd=4),overlay=TRUE)
+
+posfromask=lm(fro_posmask~age+sex+relMeanRMSmotion+logk+logkQ,data=datacorr)
+summary(posfromask)
+lm.beta(posfromask)
+imageplot<-visreg(posfromask, "age", by='logkQ',
+                  main="FRONTAL seed-based correlation: postive zstats", xlab="age", 
+                  ylab="correlatrion",line=list(col="blue",lwd=4),overlay=TRUE)
+
+```
+
+### FRO seed-based correlation  negative z-value 
+```{r}
+negfromask=lm(fro_negmask~age+sex+relMeanRMSmotion+logk,data=datacorr)
+summary(negfromask)
+lm.beta(negfromask)
+imageplot<-visreg(negfromask, "logk", 
+                  main="FRONTAL seed-based correlation: negative zstats", xlab="logk", 
+                  ylab="correlatrion",line=list(col="blue",lwd=4),overlay=TRUE)
+
+negfromask=lm(fro_negmask~age+sex+relMeanRMSmotion+logk+logkQ,data=datacorr)
+summary(negfromask)
+lm.beta(negfromask)
+imageplot<-visreg(negfromask, "age", by='logkQ',
+                  main="FRONTAL seed-based correlation: negtive zstats", xlab="age", 
+                  ylab="correlatrion",line=list(col="blue",lwd=4),overlay=TRUE)
+
+```
+

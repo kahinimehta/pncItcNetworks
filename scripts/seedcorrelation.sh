@@ -4,7 +4,7 @@
 seedpoint1=/cbica/projects/GURLAB/projects/pncitc/output/cluster_Z3.09/mask1_2mm.nii.gz
 seedpoint2=/cbica/projects/GURLAB/projects/pncitc/output/cluster_Z3.09/mask2_2mm.nii.gz
 
- bblid=/cbica/projects/GURLAB/projects/pncitc/subjectData/n307_bblid_scandid.csv
+ bblid=/cbica/projects/GURLAB/projects/pncitc/demographics/n307_bblid_scandid.csv
  image=/cbica/projects/GURLAB/projects/pncitc/subjectData/rest/
  outputdir=/cbica/projects/GURLAB/projects/pncitc/output/seedcorrmaps
 
