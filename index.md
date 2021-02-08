@@ -24,7 +24,7 @@ Theodore D. Satterthwaite
 Adam Pines
 
 ### Collaborators
-Azeez Adebimpe, Adam Pines,Bart Larsen,  Mathew Cieslak, Danielle S. Bassett, Dan Romer, David R. Roalf, Raquel E. Gur,  Ruben C. Gur, Daniel H. Wolf,  Joseph W. Kable
+Bart Larsen,  Mathew Cieslak, Danielle S. Bassett, Dan Romer, David R. Roalf, Raquel E. Gur,  Ruben C. Gur, Daniel H. Wolf,  Joseph W. Kable
 
 
 ### Project Start Date
