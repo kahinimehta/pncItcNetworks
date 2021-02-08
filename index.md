@@ -30,7 +30,7 @@ PNC Datasets
 [PNC ITC](https://github.com/PennLINC/pncItcNetworks)
 
 ### Conference Presentation
-- Oral presentation at the Society of Biological Psychiatry, April-May 20121. *Connectome Wide Study of Intrinsic Functional Connectivity Associated With Impulsive Choice in Adolescence.* 
+- Oral presentation at the Society of Biological Psychiatry, April-May 2021. *Connectome Wide Study of Intrinsic Functional Connectivity Associated With Impulsive Choice in Adolescence.* 
 
 ## Preprocessing and computaion steps
 ### 1. Subject filtering. 
