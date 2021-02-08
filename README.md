@@ -1,2 +1,2 @@
 # pncItcNetworks
-linking temporal discounting data to functional and structural brain networks in the pnc
+linking temporal discounting data to functional  brain networks in the pnc
