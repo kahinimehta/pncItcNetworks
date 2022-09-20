@@ -83,7 +83,7 @@ Distance matrix was first computed with the following script:
 #$ -l tmpfree=200G
 singimage=/cbica/projects/pncitc/cwasmdmr.simg 
 scriptdir=/usr/local/bin
-mdmrouput=/cbica/projects/pncitc/ignore/cwas293 #output directory
+mdmrouput=/cbica/projects/pncitc/finalreplication/cwas293 #output directory
 brainmask=/cbica/projects/pncitc/subjectData/PNCgrey.nii.gz # greymatter mask from pnc   
 bgim=/cbica/projects/pncitc/subjectData/PNCbrain.nii.gz # pnc template from pnc
 imagelist=/cbica/projects/pncitc/subjectData/imageinput_rest3.csv #list of image in nifti # HAD TO RE-GENERATE THIS LIST AS THE FILE PATHS HAD CHANGED
@@ -94,13 +94,13 @@ singularity exec -e -B /cbica/projects/pncitc $singimage $scriptdir/Rscript $scr
 
 ```
 
-The output of distance matrix: `/cbica/projects/pncitc/ignore/cwas293`
+The output of distance matrix: `/cbica/projects/pncitc/finalreplication/cwas293`
    
 The  distance matrix  was used for mdmr computation with `logk` as the main factor.
-other covariates used are `sex`, `age`, and `relative rms`:
+other covariates used are `sex`, `age`, `edu` and `relative rms`:
 
  ```math  
- distancematrix = f(logk)+relMeanRMSmotion+sex+age 
+ distancematrix = f(logk)+relMeanRMSmotion+sex+age+edu
  ```
    
 The script used for mdmr computation is as below: 
@@ -110,7 +110,7 @@ The script used for mdmr computation is as below:
 #$ -l tmpfree=300G
 singularity exec -e -B /cbica/projects/pncitc  \
 /cbica/projects/pncitc/cwasmdmr.simg \
-/usr/local/bin/Rscript /usr/local/bin/connectir_mdmr.R -i /cbica/projects/pncitc/ignore/cwas293 -f 'logk+relMeanRMSmotion+sex+age' -m /cbica/projects/pncitc/samplerecreation/n293_demographics.csv --factors2perm='logk' --save-perms -c 5 -t 5  --ignoreprocerror --memlimit=300 logk_motion_sex_age
+/usr/local/bin/Rscript /usr/local/bin/connectir_mdmr.R -i /cbica/projects/pncitc/ignore/cwas293 -f 'logk+relMeanRMSmotion+sex+age+edu' -m /cbica/projects/pncitc/samplerecreation/n293_demographics.csv --factors2perm='logk' --save-perms -c 5 -t 5  --ignoreprocerror --memlimit=300 logk_motion_sex_age_edu
 ```
 
 Memory and formatting were the main problems with these scripts not running well - the numbers/format left in were what worked for me. The output is at: `/cbica/projects/pncitc/ignore/cwas293/logk_motion_sex_age`
