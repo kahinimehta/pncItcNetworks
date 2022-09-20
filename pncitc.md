@@ -4,8 +4,7 @@ authors: Kahini
 output: html_document
 ---
 
-Working draft of manuscript available [here](https://1drv.ms/w/s!AuSorflzkw2siWlBi8ibxMcPUZri?e=Lu8v9j).
-
+Working copy of manuscript [here](https://docs.google.com/document/d/1E0HRE51VTDwpzdj5iITupCdofDJNo2ct/edit?rtpof=true&sd=true)
 #### _This markdown has been copied and modified from pncitc.md_
 
 Notes: n307 did not exclude those with the `health_exclude` criteria. Analyses were re-run on n293, using Pehlivanova et al's n427 sample and then running restQA exclusions on them (all this information was from Pehlivanova .csvs). The .csvs for this are available at `cbica/projects/pncitc/finalreplication/samplerecreation`. All final analyses were run in `cbica/projects/pncitc/ignore` (yes, pretty poorly named, but this was initially just a safety check), using the same steps as below  - additionally, any new .csvs should be pointed to in the scripts in that directory. I also moved the bblid_scanid .csv to demographics, and created a folder within subjectData called rest293 for the n = 293 replication.
@@ -110,10 +109,10 @@ The script used for mdmr computation is as below:
 #$ -l tmpfree=300G
 singularity exec -e -B /cbica/projects/pncitc  \
 /cbica/projects/pncitc/cwasmdmr.simg \
-/usr/local/bin/Rscript /usr/local/bin/connectir_mdmr.R -i /cbica/projects/pncitc/ignore/cwas293 -f 'logk+relMeanRMSmotion+sex+age+edu' -m /cbica/projects/pncitc/samplerecreation/n293_demographics.csv --factors2perm='logk' --save-perms -c 5 -t 5  --ignoreprocerror --memlimit=300 logk_motion_sex_age_edu
+/usr/local/bin/Rscript /usr/local/bin/connectir_mdmr.R -i /cbica/projects/pncitc/finalreplication/cwas293 -f 'logk+relMeanRMSmotion+sex+age+edu' -m /cbica/projects/pncitc/finalreplication/samplerecreation/n293_demographics.csv --factors2perm='logk' --save-perms -c 5 -t 5  --ignoreprocerror --memlimit=300 logk_motion_sex_age_edu
 ```
 
-Memory and formatting were the main problems with these scripts not running well - the numbers/format left in were what worked for me. The output is at: `/cbica/projects/pncitc/ignore/cwas293/logk_motion_sex_age`
+Memory and formatting were the main problems with these scripts not running well - the numbers/format left in were what worked for me. The output is at: `/cbica/projects/pncitc/finalreplication/cwas293/logk_motion_sex_age_edu`
 
 ### 2. Significant clusters from mdmr
 The cluster analysis was computed  with the script `scripts/grf_fslcluster.sh`, written based on  [FSL cluster analysis](https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/Cluster) with  Gaussian Random Field (GRF) theory
@@ -125,7 +124,7 @@ cluster.sh reads as below:
 ```
  #!/bin/bash # NO NEED TO QSUB
 dir=/cbica/projects/pncitc
-bash grf_fslcluster.sh -i ${dir}/ignore/cwas293/logk_motion_sex_age/zstats_logk.nii.gz  -m ${dir}/ignore/cwas293/mask.nii.gz -t 3.09 -o ${dir}/ignore/cluster_output 
+bash grf_fslcluster.sh -i ${dir}/finalreplication/cwas293/logk_motion_sex_age_edu/zstats_logk.nii.gz  -m ${dir}/finalreplication/cwas293/mask.nii.gz -t 3.09 -o ${dir}/finalreplication/cluster_output 
 ```
 
 while grf_fslcluster.sh reads as: 
@@ -215,7 +214,7 @@ cluster -i ${zstat} -d ${id0} --volume=${id1} -t ${thresh} -p 0.05 \
 echo "done"
 ```
 
-The output of cluster masks is at: `/cbica/projects/pncitc/ignore/cluster_output/cluster_Z3.09`. 
+The output of cluster masks is at: `/cbica/projects/pncitc/finalreplication/cluster_output/cluster_Z3.09`. 
 
 Numbers obtained from the CSV slightly different than before, but ultimately a close replication for the second cluster(likely due to changes in software version): 
 | Cluster Index | Voxels | P | -log10(P) | MAX | MAX X (vox) | MAX Y (vox) | MAX Z (vox) | COG X (vox) | COG Y (vox) | COG Z (vox) |
