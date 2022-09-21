@@ -7,10 +7,11 @@ output: html_document
 Working copy of manuscript [here](https://docs.google.com/document/d/1E0HRE51VTDwpzdj5iITupCdofDJNo2ct/edit?rtpof=true&sd=true)
 #### _This markdown has been copied and modified from pncitc.md_
 
-Notes: n307 did not exclude those with the `health_exclude` criteria. Analyses were re-run on n293, using Pehlivanova et al's n427 sample and then running restQA exclusions on them (all this information was from Pehlivanova .csvs). The .csvs for this are available at `cbica/projects/pncitc/finalreplication/samplerecreation`. All final analyses were run in `cbica/projects/pncitc/ignore` (yes, pretty poorly named, but this was initially just a safety check), using the same steps as below  - additionally, any new .csvs should be pointed to in the scripts in that directory. I also moved the bblid_scanid .csv to demographics, and created a folder within subjectData called rest293 for the n = 293 replication.
-**Results were similar in N293 for the second cluster, things changed for the first cluster. Visualizations are available in the .html format within ignore**
+Notes: n307 did not exclude those with the `health_exclude` criteria. Analyses were re-run on n283, using Pehlivanova et al's n427 sample and then running restQA exclusions on them (all this information was from Pehlivanova .csvs) as well as excluding those with missing demo data. The .csvs for this are available at `cbica/projects/pncitc/finalreplication/samplerecreation`. All final analyses were run in `cbica/projects/pncitc/finalreplication`.
 
-Additionally: "~/" means that the path must be supplied by the user. 
+
+**Results were similar in N283 for the second cluster, things changed for the first cluster.**
+
 
 ### Sample replication
 
@@ -65,7 +66,8 @@ medu = pncit1$Medu # average of mat and pat edu
 fedu = pncit1$Fedu
 edu = (medu+fedu)/2
 pncit1$edu = edu
-write.csv(pncit1,'n293_demographics.csv',row.names = FALSE,quote = FALSE)
+pncit1=pncit1[which(pncit1$edu>0.0),] # remove NaN values
+write.csv(pncit1,'n282_demographics.csv',row.names = FALSE,quote = FALSE)
 
 
 ```
@@ -82,10 +84,10 @@ Distance matrix was first computed with the following script:
 #$ -l tmpfree=200G
 singimage=/cbica/projects/pncitc/cwasmdmr.simg 
 scriptdir=/usr/local/bin
-mdmrouput=/cbica/projects/pncitc/finalreplication/cwas293 #output directory
+mdmrouput=/cbica/projects/pncitc/finalreplication/cwas282 #output directory
 brainmask=/cbica/projects/pncitc/subjectData/PNCgrey.nii.gz # greymatter mask from pnc   
 bgim=/cbica/projects/pncitc/subjectData/PNCbrain.nii.gz # pnc template from pnc
-imagelist=/cbica/projects/pncitc/subjectData/imageinput_rest3.csv #list of image in nifti # HAD TO RE-GENERATE THIS LIST AS THE FILE PATHS HAD CHANGED
+imagelist=/cbica/projects/pncitc/finalreplication/imageinput_rest.csv #list of image in nifti # HAD TO RE-GENERATE THIS LIST AS THE FILE PATHS HAD CHANGED AS WELL AS THE SAMPLE
 rm  -rf $mdmrouput # remove previous run if exist 
 metric=pearson # pearson correlation 
 # compute distance matrix
@@ -93,7 +95,7 @@ singularity exec -e -B /cbica/projects/pncitc $singimage $scriptdir/Rscript $scr
 
 ```
 
-The output of distance matrix: `/cbica/projects/pncitc/finalreplication/cwas293`
+The output of distance matrix: `/cbica/projects/pncitc/finalreplication/cwas282`
    
 The  distance matrix  was used for mdmr computation with `logk` as the main factor.
 other covariates used are `sex`, `age`, `edu` and `relative rms`:
@@ -109,7 +111,7 @@ The script used for mdmr computation is as below:
 #$ -l tmpfree=300G
 singularity exec -e -B /cbica/projects/pncitc  \
 /cbica/projects/pncitc/cwasmdmr.simg \
-/usr/local/bin/Rscript /usr/local/bin/connectir_mdmr.R -i /cbica/projects/pncitc/finalreplication/cwas293 -f 'logk+relMeanRMSmotion+sex+age+edu' -m /cbica/projects/pncitc/finalreplication/samplerecreation/n293_demographics.csv --factors2perm='logk' --save-perms -c 5 -t 5  --ignoreprocerror --memlimit=300 logk_motion_sex_age_edu
+/usr/local/bin/Rscript /usr/local/bin/connectir_mdmr.R -i /cbica/projects/pncitc/finalreplication/cwas282 -f 'logk+relMeanRMSmotion+sex+age+edu' -m /cbica/projects/pncitc/finalreplication/samplerecreation/n282_demographics.csv --factors2perm='logk' --save-perms -c 5 -t 5  --ignoreprocerror --memlimit=300 logk_motion_sex_age_edu
 ```
 
 Memory and formatting were the main problems with these scripts not running well - the numbers/format left in were what worked for me. The output is at: `/cbica/projects/pncitc/finalreplication/cwas293/logk_motion_sex_age_edu`
