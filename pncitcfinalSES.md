@@ -124,9 +124,9 @@ One STABLE cluster at dMPFC was found. The second cluster changed location or di
 
 cluster.sh reads as below:
 ```
- #!/bin/bash # NO NEED TO QSUB
+#!/bin/bash # NO NEED TO QSUB
 dir=/cbica/projects/pncitc
-bash grf_fslcluster.sh -i ${dir}/finalreplication/cwas293/logk_motion_sex_age_edu/zstats_logk.nii.gz  -m ${dir}/finalreplication/cwas293/mask.nii.gz -t 3.09 -o ${dir}/finalreplication/cluster_output 
+bash grf_fslcluster.sh -i ${dir}/finalreplication/cwas282/logk_motion_sex_age_edu/zstats_logk.nii.gz  -m ${dir}/finalreplication/cwas282/mask.nii.gz -t 3.09 -o ${dir}/finalreplication/cluster_output
 ```
 
 while grf_fslcluster.sh reads as: 
