@@ -945,6 +945,6 @@ cluster -i ${zstat} -d ${id0} --volume=${id1} -t ${thresh} -p 0.05 \
 echo "done"
 ```
 
-The output of cluster masks is at: `/cbica/projects/pncitc/finalreplication/cluster_output/cluster_Z3.09`. 
+The output of cluster masks is at: `/cbica/projects/pncitc/finalreplication/cluster_output/cluster_Z3.09`. We found the same cluster to be stable, but as before also a second cluster that was unstable and appeared at different locations across two replications.
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
