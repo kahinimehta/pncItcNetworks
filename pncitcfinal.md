@@ -740,4 +740,211 @@ reg_ses = lm(logk~ses)
 plot(logk~ses)
 ```
 4. There appeared to be a correlation of -0.155 for SES
+5. We conducted sensitivity analysis but the results did not change. The code for this is here: 
+
+#### Sample replication
+
+The code for sample replication is: 
+
+```
+setwd("/Users/kahinim/Desktop")
+
+# read the subject demographics
+restdatapnc=read.csv('n2416_RestQAData_20170714.csv') # pnc QA for resting-state data
+nmel=read.csv('n452_pnc_itc_whole_sample_20160825.csv') # Marieta final subject QA  
+z = read.csv('n427_fsSubcortVol.csv')
+pncitc=merge(nmel,restdatapnc, by=c('bblid','scanid')) # merge by Ids  
+pncitc=merge(pncitc,z, by=c('bblid','scanid')) # merge by Ids  
+# select the neccessary variable for screening and further processing
+# age, logk, sex, rest exclusion  variables: voxelwise and motion
+pncit1 <- data.frame(
+  pncitc$bblid,
+  pncitc$healthExclude,
+  pncitc$scanid,
+  pncitc$logk,
+  pncitc$ageAtScan,
+  pncitc$logAlpha,pncitc$sex,pncitc$race,pncitc$race2,pncitc$restExclude,pncitc$restExcludeVoxelwise,
+  pncitc$restNoDataExclude,pncitc$relMeanRMSmotion,pncitc$restNSpikesMotion,pncitc$restNSpikesMotionExclude,pncitc$restRelMeanRMSMotionExclude, pncitc$restNoDataExclude, pncitc$restVoxelwiseCoverageExclude, pncitc$meduCnbGo1, pncitc$feduCnbGo1
+)
+colnames(pncit1)=c('bblid','healthExclude',
+                   'scanid','logk','ageAtScan','logAlpha','sex','race','race2','restExclude','restExcludeVoxelwise',
+                   'restNoDataExclude','relMeanRMSmotion','restNSpikesMotion','restNSpikesMotionExclude','restRelMeanRMSMotionExclude','restNoDataExclude', 'restVoxelwiseCoverageExclude', 'Medu', 'Fedu')
+
+pncit1=pncit1[which(pncit1$restExcludeVoxelwise==0),]
+pncit1=pncit1[which(pncit1$restNoDataExclude==0),]
+pncit1=pncit1[which(pncit1$restRelMeanRMSMotionExclude==0),]
+pncit1=pncit1[which(pncit1$restVoxelwiseCoverageExclude==0),]
+pncit1=pncit1[which(pncit1$healthExclude==0),]
+pncit1=pncit1[which(pncit1$restNSpikesMotionExclude==0),]
+pncit1=pncit1[-which(is.na(pncit1$relMeanRMSmotion)),]
+
+
+# during manual checking, one subject (id:96832) has data points 90 less than 120 expected 
+pncit1=pncit1[-which(pncit1$bblid==96832),]
+
+#get the ids of final subjects
+ids=data.frame(pncit1$bblid,pncit1$scanid) # get bblid and scanid for futher analyses 
+
+# write out demographics and bblid and scanid
+write.csv(ids,'n293_blbid_scanid.csv',row.names = FALSE,quote = FALSE)
+pncit1$age=pncit1$ageAtScan/12
+write.csv(pncit1,'n293_demographics.csv',row.names = FALSE,quote = FALSE)
+
+pncit1=read.csv('n293_demographics.csv')
+medu = pncit1$Medu # average of mat and pat edu
+fedu = pncit1$Fedu
+edu = (medu+fedu)/2
+pncit1$edu = edu
+pncit1=pncit1[which(pncit1$edu>0.0),] # remove NaN values
+write.csv(pncit1,'n282_demographics.csv',row.names = FALSE,quote = FALSE)
+
+
+```
+
+#### 1. CWAS-MDMR
+
+The computation of  CWASMDMR was  done with  `cwasmdr` singularity image (`/cbica/projects/pncitc/cwasmdmr.simg`). We used packages from the connectir project at [https://github.com/czarrar/connectir](https://github.com/czarrar/connectir)
+
+Distance matrix was first computed with the following script: 
+
+```
+#!/bin/bash
+#$ -l h_vmem=320G #QSUB, can take some hours
+#$ -l tmpfree=200G
+singimage=/cbica/projects/pncitc/cwasmdmr.simg 
+scriptdir=/usr/local/bin
+mdmrouput=/cbica/projects/pncitc/finalreplication/cwas282 #output directory
+brainmask=/cbica/projects/pncitc/subjectData/PNCgrey.nii.gz # greymatter mask from pnc   
+bgim=/cbica/projects/pncitc/subjectData/PNCbrain.nii.gz # pnc template from pnc
+imagelist=/cbica/projects/pncitc/finalreplication/imageinput_rest.csv #list of image in nifti # HAD TO RE-GENERATE THIS LIST AS THE FILE PATHS HAD CHANGED AS WELL AS THE SAMPLE
+rm  -rf $mdmrouput # remove previous run if exist 
+metric=pearson # pearson correlation 
+# compute distance matrix
+singularity exec -e -B /cbica/projects/pncitc $singimage $scriptdir/Rscript $scriptdir/connectir_subdist.R $mdmrouput --infuncs1=$imagelist --ztransform --automask1  -c 3 -t 4 --brainmask1=$brainmask --method="$metric" --bg=$bgim  --overwrite --memlimit=200
+
+```
+
+The output of distance matrix: `/cbica/projects/pncitc/finalreplication/cwas282`
+   
+The  distance matrix  was used for mdmr computation with `logk` as the main factor.
+other covariates used are `sex`, `age`, `edu` and `relative rms`:
+
+ ```math  
+ distancematrix = f(logk)+relMeanRMSmotion+sex+age+edu
+ ```
+   
+The script used for mdmr computation is as below: 
+```
+#!/bin/bash
+#$ -l h_vmem=300G
+#$ -l tmpfree=300G
+singularity exec -e -B /cbica/projects/pncitc  \
+/cbica/projects/pncitc/cwasmdmr.simg \
+/usr/local/bin/Rscript /usr/local/bin/connectir_mdmr.R -i /cbica/projects/pncitc/finalreplication/cwas282 -f 'logk+relMeanRMSmotion+sex+age+edu' -m /cbica/projects/pncitc/finalreplication/samplerecreation/n282_demographics.csv --factors2perm='logk' --save-perms -c 5 -t 5  --ignoreprocerror --memlimit=300 logk_motion_sex_age_edu
+```
+
+Memory and formatting were the main problems with these scripts not running well - the numbers/format left in were what worked for me. The output is at: `/cbica/projects/pncitc/finalreplication/cwas293/logk_motion_sex_age_edu`
+
+#### 2. Significant clusters from mdmr
+The cluster analysis was computed  with the script `scripts/grf_fslcluster.sh`, written based on  [FSL cluster analysis](https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/Cluster) with  Gaussian Random Field (GRF) theory
+
+The script `scripts/cluster.sh` called grf_fslcluster.sh, as listed in this repo under scripts, with `z=3.09`
+One STABLE cluster at dMPFC was found. The second cluster changed location or did not appear across locations. 
+
+cluster.sh reads as below:
+```
+#!/bin/bash # NO NEED TO QSUB
+dir=/cbica/projects/pncitc
+bash grf_fslcluster.sh -i ${dir}/finalreplication/cwas282/logk_motion_sex_age_edu/zstats_logk.nii.gz  -m ${dir}/finalreplication/cwas282/mask.nii.gz -t 3.09 -o ${dir}/finalreplication/cluster_output
+```
+
+while grf_fslcluster.sh reads as: 
+```
+#!/usr/bin/env bash
+
+###################################################################
+###################################################################
+
+###################################################################
+# Combine all text file output
+###################################################################
+
+###################################################################
+# Usage function
+###################################################################
+Usage(){
+  echo ""; echo ""; echo ""
+  echo "Usage: `basename $0`  grf_fslcluster.sh -i zstat -m mask -t threshold -o output"
+  echo ""
+  echo "Compulsory arguments:"
+  echo "  -i : zstats: compulsory"
+  echo "  -m: mask"
+  echo "  -o : Output file name"
+  echo "       "
+  exit 2
+}
+
+###################################################################
+# Parse arguments
+###################################################################
+while getopts "i:t:m:o:h" OPTION ; do
+  case ${OPTION} in
+    i)
+      zstat=${OPTARG}
+      ;;
+    t)
+      thresh=${OPTARG}
+      ;;
+    m)
+      mask=${OPTARG}
+      ;;
+    o)
+      outdir=${OPTARG}
+      ;;
+    h)
+      Usage
+      ;;
+    *)
+      Usage
+      ;;
+    esac
+done
+
+###################################################################
+# Ensure that all compulsory arguments have been defined
+###################################################################
+[[ -z ${outdir} ]] && Usage
+[[ -z ${zstat} ]] && Usage
+[[ -z ${mask} ]] && Usage
+
+###################################################################
+# Now run through each file that we find and append it to the output file
+###################################################################
+ 
+if [[ -z ${thresh} ]]; then 
+   thresh=2.3
+   echo "voxel threshold is 2.3 (default)"
+fi 
+
+echo " find d and v " 
+dv=$(smoothest -z ${zstat} -m ${mask})
+
+id0=$(echo $dv |cut -d' ' -f2)
+id1=$(echo $dv |cut -d' ' -f4)
+echo " the dlh is ${id0}"
+echo "                  "
+echo " the number of volume: ${id1}"
+echo $thresh
+echo $dv
+mkdir -p ${outdir}/cluster_Z${thresh}
+
+cluster -i ${zstat} -d ${id0} --volume=${id1} -t ${thresh} -p 0.05 \
+   -o  ${outdir}/cluster_Z${thresh}/cluster_Z${thresh} >  \
+    ${outdir}/cluster_Z${thresh}/cluster_Z${thresh}.csv
+
+echo "done"
+```
+
+The output of cluster masks is at: `/cbica/projects/pncitc/finalreplication/cluster_output/cluster_Z3.09`. 
+
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
