@@ -82,7 +82,7 @@ Distance matrix was first computed with the following script:
 #$ -l tmpfree=200G
 singimage=/cbica/projects/pncitc/cwasmdmr.simg 
 scriptdir=/usr/local/bin
-mdmrouput=/cbica/projects/pncitc/finalreplication/cwas293 #output directory
+mdmrouput=/cbica/projects/pncitc/ignore/cwas293 #output directory
 brainmask=/cbica/projects/pncitc/subjectData/PNCgrey.nii.gz # greymatter mask from pnc   
 bgim=/cbica/projects/pncitc/subjectData/PNCbrain.nii.gz # pnc template from pnc
 imagelist=/cbica/projects/pncitc/subjectData/imageinput_rest3.csv #list of image in nifti # HAD TO RE-GENERATE THIS LIST AS THE FILE PATHS HAD CHANGED
@@ -93,13 +93,13 @@ singularity exec -e -B /cbica/projects/pncitc $singimage $scriptdir/Rscript $scr
 
 ```
 
-The output of distance matrix: `/cbica/projects/pncitc/finalreplication/cwas293`
+The output of distance matrix: `/cbica/projects/pncitc/ignore/cwas293`
    
 The  distance matrix  was used for mdmr computation with `logk` as the main factor.
-other covariates used are `sex`, `age`, `edu` and `relative rms`:
+other covariates used are `sex`, `age`,  and `relative rms`:
 
  ```math  
- distancematrix = f(logk)+relMeanRMSmotion+sex+age+edu
+ distancematrix = f(logk)+relMeanRMSmotion+sex+age
  ```
    
 The script used for mdmr computation is as below: 
@@ -109,10 +109,10 @@ The script used for mdmr computation is as below:
 #$ -l tmpfree=300G
 singularity exec -e -B /cbica/projects/pncitc  \
 /cbica/projects/pncitc/cwasmdmr.simg \
-/usr/local/bin/Rscript /usr/local/bin/connectir_mdmr.R -i /cbica/projects/pncitc/finalreplication/cwas293 -f 'logk+relMeanRMSmotion+sex+age+edu' -m /cbica/projects/pncitc/finalreplication/samplerecreation/n293_demographics.csv --factors2perm='logk' --save-perms -c 5 -t 5  --ignoreprocerror --memlimit=300 logk_motion_sex_age_edu
+/usr/local/bin/Rscript /usr/local/bin/connectir_mdmr.R -i /cbica/projects/pncitc/ignore/cwas293 -f 'logk+relMeanRMSmotion+sex+age' -m /cbica/projects/pncitc/ignore/samplerecreation/n293_demographics.csv --factors2perm='logk' --save-perms -c 5 -t 5  --ignoreprocerror --memlimit=300 logk_motion_sex_age
 ```
 
-Memory and formatting were the main problems with these scripts not running well - the numbers/format left in were what worked for me. The output is at: `/cbica/projects/pncitc/finalreplication/cwas293/logk_motion_sex_age_edu`
+Memory and formatting were the main problems with these scripts not running well - the numbers/format left in were what worked for me. The output is at: `/cbica/projects/pncitc/ignore/cwas293/logk_motion_sex_age`
 
 ### 2. Significant clusters from mdmr
 The cluster analysis was computed  with the script `scripts/grf_fslcluster.sh`, written based on  [FSL cluster analysis](https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/Cluster) with  Gaussian Random Field (GRF) theory
@@ -124,7 +124,7 @@ cluster.sh reads as below:
 ```
  #!/bin/bash # NO NEED TO QSUB
 dir=/cbica/projects/pncitc
-bash grf_fslcluster.sh -i ${dir}/finalreplication/cwas293/logk_motion_sex_age_edu/zstats_logk.nii.gz  -m ${dir}/finalreplication/cwas293/mask.nii.gz -t 3.09 -o ${dir}/finalreplication/cluster_output 
+bash grf_fslcluster.sh -i ${dir}/ignore/cwas293/logk_motion_sex_age/zstats_logk.nii.gz  -m ${dir}/ignore/cwas293/mask.nii.gz -t 3.09 -o ${dir}/ignore/cluster_output 
 ```
 
 while grf_fslcluster.sh reads as: 
@@ -214,7 +214,7 @@ cluster -i ${zstat} -d ${id0} --volume=${id1} -t ${thresh} -p 0.05 \
 echo "done"
 ```
 
-The output of cluster masks is at: `/cbica/projects/pncitc/finalreplication/cluster_output/cluster_Z3.09`. 
+The output of cluster masks is at: `/cbica/projects/pncitc/ignore/cluster_output/cluster_Z3.09`. 
 
 Numbers obtained from the CSV slightly different than before, but ultimately a close replication for the second cluster(likely due to changes in software version): 
 | Cluster Index | Voxels | P | -log10(P) | MAX | MAX X (vox) | MAX Y (vox) | MAX Z (vox) | COG X (vox) | COG Y (vox) | COG Z (vox) |
