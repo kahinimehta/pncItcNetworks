@@ -60,13 +60,6 @@ write.csv(ids,'n293_blbid_scanid.csv',row.names = FALSE,quote = FALSE)
 pncit1$age=pncit1$ageAtScan/12
 write.csv(pncit1,'n293_demographics.csv',row.names = FALSE,quote = FALSE)
 
-pncit1=read.csv('n293_demographics.csv')
-medu = pncit1$Medu # average of mat and pat edu
-fedu = pncit1$Fedu
-edu = (medu+fedu)/2
-pncit1$edu = edu
-write.csv(pncit1,'n293_demographics.csv',row.names = FALSE,quote = FALSE)
-
 
 ```
 
