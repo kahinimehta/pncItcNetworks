@@ -942,7 +942,57 @@ The output of cluster masks is at: `/cbica/projects/pncitc/finalreplication/clus
 
 ### 7. Spin-spin testing
 
-First, we generated fsaverage5 surfaces from the MNI statmaps we used for visualization, using the code [here](https://github.com/PennLINC/PennLINC.github.io/blob/main/docs/Tutorials/vol2surf_mapping.Rmd). Files used for this are available [here](https://github.com/PennLINC/PennLINC.github.io/tree/main/docs/Tutorials/fsaverage5).
+First, we generated fsaverage5 surfaces from the MNI statmaps we used for visualization, using the code below. We also added visualization steps as a sanity check:
+```
+
+library(ciftiTools)
+ciftiTools.setOption('wb_path', '/Applications/workbench/')
+
+library(rgl) #to use ciftiTools graphics
+library(rmarkdown)
+library(gifti) #to read in your surface giftis 
+
+command=sprintf("-volume-to-surface-mapping /Users/kahinim/Desktop/ITC/finalIms/4Dcopeseed1meanMNI.nii.gz /Users/kahinim/Desktop/fsaverage5_lh.pial_avg.surf.gii /Users/kahinim/Desktop/mean_l.shape.gii -trilinear")
+ciftiTools::run_wb_cmd(command, intern = FALSE, ignore.stdout = NULL, ignore.stderr = NULL)
+
+command=sprintf("-volume-to-surface-mapping /Users/kahinim/Desktop/ITC/finalIms/4Dcopeseed1meanMNI.nii.gz /Users/kahinim/Desktop/fsaverage5_rh.pial_avg.surf.gii /Users/kahinim/Desktop/mean_r.shape.gii -trilinear")
+ciftiTools::run_wb_cmd(command, intern = FALSE, ignore.stdout = NULL, ignore.stderr = NULL)
+
+test_l <- read_gifti("/Users/kahinim/Desktop/mean_l.shape.gii")
+test_r <- read_gifti("/Users/kahinim/Desktop/mean_r.shape.gii")
+test.ciftimap <- as_cifti(cortexL = test_l$data$normal, cortexR = test_r$data$normal) 
+write_cifti(test.ciftimap, "/Users/kahinim/Desktop/mean.dscalar.nii")
+
+surfL_name <- read_surf("/Users/kahinim/Desktop/fsaverage5_lh.inflated_avg.surf.gii")
+surfR_name <- read_surf("/Users/kahinim/Desktop/fsaverage5_rh.inflated_avg.surf.gii")
+
+test.ciftimap <- add_surf(test.ciftimap, surfL=surfL_name, surfR=surfR_name)
+view_cifti(test.ciftimap, widget=TRUE, colors=c("blue","gray","red"), zlim=c(-0.5,0.5))
+
+command=sprintf("-volume-to-surface-mapping /Users/kahinim/Desktop/ITC/finalIms/zstat2MNI.nii.gz /Users/kahinim/Desktop/fsaverage5_lh.pial_avg.surf.gii /Users/kahinim/Desktop/logk_l.shape.gii -trilinear")
+ciftiTools::run_wb_cmd(command, intern = FALSE, ignore.stdout = NULL, ignore.stderr = NULL)
+
+command=sprintf("-volume-to-surface-mapping /Users/kahinim/Desktop/ITC/finalIms/zstat2MNI.nii.gz /Users/kahinim/Desktop/fsaverage5_rh.pial_avg.surf.gii /Users/kahinim/Desktop/logk_r.shape.gii -trilinear")
+ciftiTools::run_wb_cmd(command, intern = FALSE, ignore.stdout = NULL, ignore.stderr = NULL)
+
+test_l <- read_gifti("/Users/kahinim/Desktop/logk_l.shape.gii")
+test_r <- read_gifti("/Users/kahinim/Desktop/logk_r.shape.gii")
+test.ciftimap <- as_cifti(cortexL = test_l$data$normal, cortexR = test_r$data$normal) 
+write_cifti(test.ciftimap, "/Users/kahinim/Desktop/logk.dscalar.nii")
+
+surfL_name <- read_surf("/Users/kahinim/Desktop/fsaverage5_lh.inflated_avg.surf.gii")
+surfR_name <- read_surf("/Users/kahinim/Desktop/fsaverage5_rh.inflated_avg.surf.gii")
+
+test.ciftimap <- add_surf(test.ciftimap, surfL=surfL_name, surfR=surfR_name)
+view_cifti(test.ciftimap, widget=TRUE, colors=c("blue","gray"), zlim=c(-5,-3))
+view_cifti(test.ciftimap, widget=TRUE, colors=c("gray","red"), zlim=c(3,5))
+
+
+```
+
+
+
+Surface files used for this projection are available [here](https://github.com/PennLINC/PennLINC.github.io/tree/main/docs/Tutorials/fsaverage5).
 
 Then, following the documentation [here](https://github.com/PennLINC/IntermodalCoupling/tree/main/spin_test), Erica performed the actual spin testing.  
 
