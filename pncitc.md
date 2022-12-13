@@ -940,4 +940,10 @@ echo "done"
 
 The output of cluster masks is at: `/cbica/projects/pncitc/finalreplication/cluster_output/cluster_Z3.09`. We found the same cluster to be stable, but as before also a second cluster that was unstable and appeared at different locations across two replications.
 
+### 7. Spin-spin testing
+
+First, we generated fsaverage5 surfaces from the MNI statmaps we used for visualization, using the code [here](https://github.com/PennLINC/PennLINC.github.io/blob/main/docs/Tutorials/vol2surf_mapping.Rmd). Files used for this are available [here](https://github.com/PennLINC/PennLINC.github.io/tree/main/docs/Tutorials/fsaverage5)
+
+Then, following the documentation [here](https://github.com/PennLINC/IntermodalCoupling/tree/main/spin_test), Erica performed the actual spin testing.  
+
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
