@@ -940,7 +940,7 @@ echo "done"
 
 The output of cluster masks is at: `/cbica/projects/pncitc/finalreplication/cluster_output/cluster_Z3.09`. We found the same cluster to be stable, but as before also a second cluster that was unstable and appeared at different locations across two replications.
 
-### 7. Spin-spin testing
+### 7. Spin testing
 
 First, we generated fsaverage5 surfaces from the MNI statmaps we used for visualization, using the code below. We also added visualization steps as a sanity check:
 ```
