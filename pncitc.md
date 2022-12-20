@@ -994,6 +994,26 @@ view_cifti(test.ciftimap, widget=TRUE, colors=c("gray","red"), zlim=c(3,5))
 
 Surface files used for this projection are available [here](https://github.com/PennLINC/PennLINC.github.io/tree/main/docs/Tutorials/fsaverage5).
 
+Spin testing was performed on the data column in the gifti, which was read in using the library 'gifti' in R: 
+```
+library(gifti)
+col_file = '/Users/kahinim/Desktop/logk_r.shape.gii'
+data_r = readgii(col_file)$data
+write.table(data_r, file = "/Users/kahinim/Desktop/R_logk_data.txt", sep = "", row.names = FALSE)
+
+col_file = '/Users/kahinim/Desktop/logk_l.shape.gii'
+data_r = readgii(col_file)$data
+write.table(data_r, file = "/Users/kahinim/Desktop/L_logk_data.txt", sep = "", row.names = FALSE)
+
+col_file = '/Users/kahinim/Desktop/mean_r.shape.gii'
+data_r = readgii(col_file)$data
+write.table(data_r, file = "/Users/kahinim/Desktop/R_mean_data.txt", sep = "", row.names = FALSE)
+
+col_file = '/Users/kahinim/Desktop/mean_l.shape.gii'
+data_r = readgii(col_file)$data
+write.table(data_r, file = "/Users/kahinim/Desktop/L_mean_data.txt", sep = "", row.names = FALSE)
+
+```
 Then, following the documentation [here](https://github.com/PennLINC/IntermodalCoupling/tree/main/spin_test), Erica performed the actual spin testing.  
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
