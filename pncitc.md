@@ -1014,6 +1014,6 @@ data_r = readgii(col_file)$data
 write.table(data_r, file = "/Users/kahinim/Desktop/L_mean_data.txt", sep = "", row.names = FALSE)
 
 ```
-Then, following the documentation [here](https://github.com/PennLINC/IntermodalCoupling/tree/main/spin_test), Erica performed the actual spin testing.  
+Then, following the documentation [here](https://github.com/ballere/kahini_spin), Erica performed the actual spin testing.  
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
